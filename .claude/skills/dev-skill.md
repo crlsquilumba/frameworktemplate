@@ -82,9 +82,49 @@ FRONTEND/src/shared/
 
 ## Reglas de Oro
 
-### 1. NUNCA crear componentes duplicados
-Si necesitas un Button, Input, Card → USAR de `shared/components/`
-Si no existe → CREAR en shared/ y luego usar
+### 1. REGLA DE COMPONENTES REUTILIZABLES (OBLIGATORIO)
+
+**NUNCA reescribir código que ya existe. Si existe → Actualizar/Corregir. Si no existe → Crear.**
+
+**Flujo obligatorio antes de crear un componente:**
+```
+1. ¿Existe en shared/components/UI/? → USAR
+2. ¿Existe en shared/components/Layout/? → USAR
+3. ¿Existe en modules/[modulo]/components/? → USAR o EXTENDER
+4. ¿No existe? → CREAR en ubicación correcta
+```
+
+**Catálogo de Componentes (referencia):**
+| Componente | Ubicación | Estado |
+|------------|-----------|--------|
+| Button | shared/components/UI/ | ✅ |
+| Input | shared/components/UI/ | ⚠️ |
+| Modal | shared/components/UI/ | ⚠️ |
+| Card | shared/components/UI/ | ⚠️ |
+| Badge | shared/components/UI/ | ⚠️ |
+| Spinner | shared/components/UI/ | ⚠️ |
+| Toast | shared/components/UI/ | ⚠️ |
+| Header | shared/components/Layout/ | ✅ |
+| Footer | shared/components/Layout/ | ✅ |
+| PageContainer | shared/components/Layout/ | ⚠️ |
+| BookCard | modules/catalog/components | ✅ |
+| SearchBar | modules/catalog/components | ✅ |
+| StarRating | modules/catalog/components | ✅ |
+| Reviews | modules/catalog/components | ✅ |
+| CartItem | modules/cart/components | ⚠️ |
+| CartSummary | modules/cart/components | ⚠️ |
+| CheckoutForm | modules/checkout/components | ⚠️ |
+| OrderCard | modules/orders/components | ⚠️ |
+| WishlistItem | modules/wishlist/components | ⚠️ |
+| ProfileForm | modules/profile/components | ⚠️ |
+| PointsDisplay | modules/points/components | ✅ |
+
+**Antes de implementar:**
+1. Leer `DOCUMENTOS/02-use-cases.md` para ver qué componentes existen
+2. Revisar `DOCUMENTOS/04-arquitectura.md` sección 7.1
+3. Verificar si el componente ya existe
+4. Si existe: actualizar/corregir - NO reescribir
+5. Si no existe: crear en la ubicación correcta
 
 ### 2. Tailwind CSS (NO CSS custom)
 ```jsx

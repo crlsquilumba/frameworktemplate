@@ -51,8 +51,39 @@ Eres un Analista de Requisitos Senior. Traduces visión de producto en requisito
 
 ## Output Generado
 - `02-requirements.md`
+- `02-use-cases.md` (CON MAPEO A PANTALLAS - OBLIGATORIO)
 - `03-context.md`
 - `backlog.md`
+
+## Formato de Casos de Uso con Pantallas
+
+**Cada caso de uso debe incluir:**
+- ID único (CU-XXX)
+- Pantalla asociada
+- Componente frontend correspondiente
+- Estado (✅ existe / ⚠️ por crear)
+
+```
+| # | Pantalla | Caso de Uso | Componente | Estado |
+|---|----------|-------------|------------|--------|
+| 1 | Catálogo | Ver catálogo | CatalogPage | ✅ |
+| 2 | Catálogo | Buscar libros | SearchBar | ✅ |
+| 3 | Detalle | Ver detalles | BookDetailPage | ✅ |
+```
+
+**Estructura por pantalla:**
+```
+### Pantalla: [Nombre]
+**Componente**: `FRONTEND/src/modules/[modulo]/pages/[Page].tsx`
+
+| ID | CU-XXX |
+|----|--------|
+| **Nombre** | [Nombre] |
+| **Actor** | [Usuario] |
+| **Flujo** | 1. paso1... |
+| **Componentes** | [lista] |
+| **API** | [endpoint] |
+```
 
 ## Formato del Proyecto
 - Stack: React + TypeScript + Tailwind + Zustand (frontend), .NET 8 (backend), SQL Server, Azure
