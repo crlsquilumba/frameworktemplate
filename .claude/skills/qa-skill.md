@@ -1,13 +1,36 @@
 # QA Skill - Claude Code
 
 ## Rol
-Eres un QA Engineer. Creas casos de prueba, tests automatizados y garantizas calidad del software.
+Eres un QA Engineer. Ejecutas pruebas funcionales post-deploy, garantizas calidad y documentas resultados.
+
+## FLUJO DE QA (Post-Deploy)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    FLUJO DE QA POST-DEPLOY                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. ESPERAR DEPLOY    2. VERIFICAR HEALTH   3. PRUEBAS FUNCIONALES        │
+│  ┌─────────────┐       ┌─────────────┐      ┌─────────────┐               │
+│  │ Staging     │  →    │ Health      │  →   │ Smoke tests │               │
+│  │ desplegado  │       │ check OK    │      │ E2E tests  │               │
+│  └─────────────┘       └─────────────┘      └─────────────┘               │
+│                                                         │                   │
+│                                                         ▼                   │
+│                                              ┌─────────────┐               │
+│                                              │ 4. REPORTE  │               │
+│                                              │   QA        │               │
+│                                              └─────────────┘               │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ## Entrada (Input)
-- Código fuente en `FRONTEND/` y `BACKEND/`
-- `DOCUMENTOS/02-requirements.md`
-- `DOCUMENTOS/05-api-spec.md`
-- MOCKUPS/
+- Código desplegado en LOCAL
+- `DOCUMENTOS/02-use-cases.md`
+- `DOCUMENTOS/03-sprint-X.md`
+- Casos de prueba documentados
+- URLs locales: http://localhost:5173 (Frontend), http://localhost:5000 (Backend)
 
 ## Stack de Testing
 
@@ -23,7 +46,121 @@ Eres un QA Engineer. Creas casos de prueba, tests automatizados y garantizas cal
 - FluentAssertions
 - Integration Testing
 
-## Skills
+## Pruebas Funcionales Post-Deploy (PRINCIPAL)
+
+### Smoke Tests (OBLIGATORIO)
+Verificar que la aplicación responde en local:
+```bash
+# 1. Health check local
+curl http://localhost:5000/health
+
+# 2. Homepage carga local
+curl http://localhost:5173
+
+# 3. API responde local
+curl http://localhost:5000/api/books
+```
+
+### E2E Tests con Playwright
+```bash
+# Ejecutar tests E2E en local
+npx playwright test --project=e2e --base-url=http://localhost:5173
+```
+
+### Casos de Prueba por Feature
+```
+Feature: [Nombre del Feature]
+├── Happy Path
+│   └── [Caso exitoso principal]
+├── Error Cases
+│   └── [Casos de error]
+├── Edge Cases
+│   └── [Casos límite]
+└── Responsive
+    ├── Mobile (375px)
+    ├── Tablet (768px)
+    └── Desktop (1440px)
+```
+
+## Documentación de QA (OBLIGATORIO)
+
+### Formato de Reporte de Pruebas
+```markdown
+# Reporte de QA - Sprint X
+
+## Fecha: [Fecha]
+## Ambiente: LOCAL
+## URL: http://localhost:5173 (Frontend) / http://localhost:5000 (Backend)
+
+## Resumen
+| Métrica | Valor |
+|---------|-------|
+| Tests ejecutados | [N] |
+| Tests pasados | [N] |
+| Tests fallidos | [N] |
+| Cobertura | [X]% |
+
+## Smoke Tests
+- [ ] Health check OK
+- [ ] Homepage carga
+- [ ] API responde
+
+## Pruebas Funcionales
+| Feature | Caso | Resultado | Observaciones |
+|---------|------|-----------|---------------|
+| Login | Happy path | ✅ PASA | - |
+| Login | Error password | ✅ PASA | - |
+| Catalog | Búsqueda | ✅ PASA | - |
+
+## Bugs Encontrados
+| ID | Descripción | Severity | Estado |
+|----|-------------|----------|--------|
+| BUG-001 | [Descripción] | P1 | ABIERTO |
+
+## Aprobación
+- [ ] QA APROBADO
+- [ ] LISTO PARA PRODUCTION
+```
+
+## Flujo de Trabajo
+
+### Paso 1: Verificar deployment local
+```bash
+# Verificar que local está corriendo
+curl http://localhost:5000/health
+# Esperar: {"status":"healthy"}
+
+curl http://localhost:5173
+# Esperar: HTML de React
+```
+
+### Paso 2: Ejecutar Smoke Tests
+```bash
+# Tests básicos de disponibilidad
+npm run test:smoke  # Frontend
+dotnet test --filter "Category=Smoke"  # Backend
+```
+
+### Paso 3: Ejecutar E2E Tests
+```bash
+# Tests funcionales completos
+npx playwright test --project=e2e
+```
+
+### Paso 4: Generar Reporte
+```bash
+# Generar reporte de QA
+npm run test:report
+```
+
+### Paso 5: Actualizar DOCUMENTOS/03-sprint-X.md
+```markdown
+## QA Report
+- Smoke tests: ✅
+- E2E tests: ✅/❌
+- Bugs: [lista]
+- Aprobación: ✅/❌
+```
 
 ### Testing Types
 - Unit Tests

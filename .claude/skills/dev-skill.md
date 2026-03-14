@@ -142,10 +142,83 @@ const user: User = { name: 'Juan' }
 const user: any = { name: 'Juan' }
 ```
 
-### 4. Tests obligatorios
-- Minimum 70% coverage
-- Tests para lógica de negocio
-- Happy path + edge cases
+### 4. FLUJO DE DESARROLLO (OBLIGATORIO)
+
+**Cada incremento de código DEBE seguir este flujo:**
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    FLUJO DE DESARROLLO POR INCREMENTO                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  1. DESARROLLA          2. TESTS UNITARIOS     3. DOCUMENTACIÓN           │
+│  ┌─────────────┐        ┌─────────────┐       ┌─────────────┐             │
+│  │ Implementa  │   →    │ Crea tests  │  →    │ Documenta   │             │
+│  │ el feature │        │ unitarios   │       │ la prueba   │             │
+│  └─────────────┘        └─────────────┘       └─────────────┘             │
+│        │                       │                       │                    │
+│        │                       │                       │                    │
+│        ▼                       ▼                       ▼                    │
+│  - Componente           - Unit tests            - README del test         │
+│  - Hook                - Coverage > 70%         - Casos de prueba        │
+│  - API endpoint        - Happy path             - Resultado esperado     │
+│  - Tipo/Interfaz       - Edge cases                                       │
+│                                                                             │
+│  ⚠️  SIN TESTS UNITARIOS NO HAY PUSH                                       │
+│  ⚠️  SIN DOCUMENTACIÓN NO HAY PUSH                                          │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Para cada feature/módulo implementado:**
+
+1. **Desarrolla** el código:
+   - Crear/actualizar componente
+   - Crear/actualizar hook
+   - Crear/actualizar API endpoint
+   - Crear/actualizar tipos
+
+2. **Crea Tests Unitarios** (OBLIGATORIO):
+   ```
+   Ubicación: modules/[modulo]/__tests__/
+   Naming: [Component].test.tsx
+   
+   Cobertura mínima: 70%
+   - Happy path (caso exitoso)
+   - Edge cases (casos límite)
+   - Error cases (manejo de errores)
+   ```
+
+3. **Documenta la Prueba** (OBLIGATORIO):
+   ```
+   Ubicación: modules/[modulo]/__tests__/README.md
+   
+   Contenido:
+   - Nombre del test
+   - Descripción
+   - Datos de entrada
+   - Resultado esperado
+   - Pasos para ejecutar
+   ```
+
+**Comando para ejecutar tests:**
+```bash
+# Frontend
+cd FRONTEND
+npm run test          # Run tests
+npm run test:coverage # Run con coverage
+
+# Backend
+cd BACKEND
+dotnet test           # Run tests
+dotnet test --collect:"XPlat Code Coverage"  # Con coverage
+```
+
+**Criterios de aceptación del código:**
+- [ ] Código implementado
+- [ ] Tests unitarios pasando (70%+ coverage)
+- [ ] Documentación de tests creada/actualizada
+- [ ] Código revisado (code review)
 
 ### 5. Clean Code
 - Nombres descriptivos

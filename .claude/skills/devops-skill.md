@@ -23,15 +23,14 @@ Eres un DevOps Engineer. Configuras CI/CD, infraestructura como código, y deplo
 - Azure Pipelines (opcional)
 
 ### IaC
-- Terraform
-
-### Container
-- Docker
-- Docker Compose (local dev)
+- Terraform (opcional para producción)
 
 ## Skills
 
-### GitHub Actions
+### Desarrollo Local
+- npm (Node.js)
+- dotnet CLI
+- Ejecución directa sin contenedores
 - Workflows CI/CD
 - Matrix builds
 - Environment management
@@ -103,16 +102,16 @@ claude --skill devops-skill "Genera CI/CD:
      * build: Vite build + .NET build
      * security: npm audit, SAST
 
-2. cd.yml:
-   - Trigger: push a main
-   - Stages:
-     * staging: auto deploy
-     * production: manual approval
-   - Jobs:
-     * build: Docker image
-     * deploy-staging: Azure App Service
-     * deploy-production: Azure App Service
-     * migrate-db: EF Core migrations
+2. cd.yml: (opcional - solo si hay cloud)
+    - Trigger: push a main
+    - Stages:
+      * staging: auto deploy
+      * production: manual approval
+    - Jobs:
+      * build: npm build + dotnet build
+      * deploy-staging: Azure App Service
+      * deploy-production: Azure App Service
+      * migrate-db: EF Core migrations
 
 3. INFRA/terraform/:
    - main.tf: Provider + Resource Group
@@ -204,26 +203,116 @@ scripts/
 └── health-check.sh
 ```
 
-## Pipeline Visual
+## Pipeline Visual - FLUJO COMPLETO DE SPRINT (LOCAL)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                         CI/CD PIPELINE                                       │
+│                    FLUJO COMPLETO DE SPRINT (DESARROLLO LOCAL)               │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   PUSH TO MAIN ──► LINT ──► TEST ──► BUILD ──► SECURITY ──► STAGING     │
-│                           │            │          │            │           │
-│                           ▼            ▼          ▼            ▼           │
-│                       npm run     npm test   npm build    Deploy to     │
-│                       lint        coverage   dotnet build  Azure Staging  │
-│                                                                     │     │
-│                                                                     ▼     │
-│                                                      ┌─────────────────┐ │
-│                                                      │   PRODUCTION    │ │
-│                                                      │  (Manual Approve)│ │
-│                                                      └─────────────────┘ │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐ │
+│  │ 1.DESARROLLA│ →  │2.TESTS     │ →  │ 3.EJECUTA  │ →  │4.PRUEBAS    │ │
+│  │             │    │  UNITARIOS  │    │   LOCAL    │    │ FUNCIONALES │ │
+│  └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘ │
+│        │                   │                   │                   │         │
+│        ▼                   ▼                   ▼                   ▼         │
+│  - Código          - Coverage >70%      - npm run dev       - Smoke tests │
+│  - Componentes     - Happy path        - dotnet run        - E2E tests   │
+│  - Hooks           - Edge cases        - localhost:5173     - Validación   │
+│  - API endpoints   - Unit tests        - localhost:5000       - Reporte     │
+│                                                                             │
+│        │                   │                   │                   │         │
+│        └───────────────────┴───────────────────┴───────────────────┘         │
+│                                    │                                         │
+│                                    ▼                                         │
+│                        ┌─────────────────────┐                              │
+│                        │ 5.DOCUMENTACIÓN    │                              │
+│                        │ + SPRINT COMPLETO   │                              │
+│                        └─────────────────────┘                              │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Desarrollo Local (SIN DOCKER):
+
+```bash
+# Terminal 1: Frontend
+cd FRONTEND
+npm install
+npm run dev
+
+# Terminal 2: Backend
+cd BACKEND
+dotnet restore
+dotnet run
+```
+
+** URLs locales:**
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:5000
+- Health: http://localhost:5000/health
+
+---
+
+## CI/CD Pipeline (LOCAL - Desarrollo)
+
+```
+COMMIT ──► LINT ──► TEST ──► BUILD ──► RUN LOCAL ──► E2E TESTS
+     │         │         │         │          │              │
+     │         │         │         │          │              ▼
+     │         │         │         │          │        SMOKE TESTS
+     │         │         │         │          │        FUNCTIONAL
+     │         │         │         │          │        REPORT
+     ▼         ▼         ▼         ▼          ▼
+  git add   npm run    npm test   npm build    ┌─────────────┐
+  git      lint       coverage   dotnet build  │ LOCAL OK    │
+  commit                                      │ (localhost) │
+                                                 └─────────────┘
+```
+
+### Desarrollo Local:
+
+```bash
+# Terminal 1: Frontend
+cd FRONTEND
+npm install
+npm run dev      # http://localhost:5173
+
+# Terminal 2: Backend
+cd BACKEND
+dotnet restore
+dotnet run      # http://localhost:5000
+```
+
+### Verificar que funciona localmente:
+
+```bash
+# Health check local
+curl http://localhost:5000/health
+
+# Frontend local
+curl http://localhost:5173
+
+# Tests E2E locales
+npx playwright test --project=e2e --base-url=http://localhost:5173
+```
+PUSH TO MAIN ──► LINT ──► TEST ──► BUILD ──► DEPLOY STAGING ──► E2E TESTS
+     │              │         │         │            │                 │
+     │              │         │         │            │                 ▼
+     │              │         │         │            │           SMOKE TESTS
+     │              │         │         │            │           FUNCTIONAL
+     │              │         │         │            │           REPORT
+     │              │         │         │            │                 │
+     │              │         │         │            └────────┬────────┘
+     │              │         │         │                     │
+     │              ▼         ▼         ▼                     ▼
+     │          npm run    npm test   npm build           STAGING OK
+     │          lint       coverage   dotnet build           │
+     │                                                   ▼
+     │                                      ┌─────────────────────┐
+     │                                      │   PRODUCTION        │
+     │                                      │  (Manual Approve)   │
+     │                                      └─────────────────────┘
 ```
 
 ## Health Check
