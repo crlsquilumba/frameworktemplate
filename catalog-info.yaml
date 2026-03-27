@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: frameworktemplate
+  description: Framework template para proyectos
+  annotations:
+    github.com/project-slug: crlsquilumba/frameworktemplate
+spec:
+  type: library
+  lifecycle: experimental
+  owner: user:default/guest
