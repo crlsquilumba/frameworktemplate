@@ -5,6 +5,13 @@ metadata:
   description: Framework template para proyectos
   annotations:
     github.com/project-slug: crlsquilumba/frameworktemplate
+    github.com/branch-count: "1"
+    github.com/has-gitflow: "false"
+    github.com/default-branch: "master"
+  links:
+    - url: https://github.com/crlsquilumba/frameworktemplate/tree/master
+      title: "✅ master — producción"
+      icon: github
 spec:
   type: library
   lifecycle: experimental
